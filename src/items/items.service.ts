@@ -79,4 +79,27 @@ export class ItemsService {
       throw new BadRequestException(error.message)
     }
   }
+
+  async transactionUpdate(id: number, updateItemDto: UpdateItemDto){
+    await this.entityManager.transaction(async(transactionEntityManager)=>{
+      const existingItem = await this.findOne(id)
+      Object.assign(existingItem, updateItemDto)
+
+      if (updateItemDto?.comments?.length) {
+        const comments = updateItemDto.comments.map((each) => new Comment(each))
+        existingItem.comments = comments
+      }
+      if (updateItemDto?.tags?.length) {
+        const tags = updateItemDto.tags.map((each) => new Tag(each))
+        existingItem.tags = tags
+      }
+
+      await transactionEntityManager.save(existingItem)
+
+      throw new Error()
+
+      //do some operation
+
+    })
+  }
 }
