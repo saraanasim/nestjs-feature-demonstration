@@ -1,6 +1,6 @@
+import { Type } from "class-transformer";
 import { IsBoolean, IsNotEmpty, IsString, ValidateNested } from "class-validator";
 import { CreateListingDto } from "./create-listing.dto";
-import { Type } from "class-transformer";
 
 export class CreateItemDto {
     @IsNotEmpty()
@@ -12,6 +12,6 @@ export class CreateItemDto {
     public: boolean;
 
     @ValidateNested()
-    @Type(()=>CreateListingDto)
-    listing:CreateListingDto
+    @Type(() => CreateListingDto)
+    listing: CreateListingDto
   }
