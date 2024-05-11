@@ -6,6 +6,7 @@ import { UpdateItemDto } from './dto/update-item.dto';
 import { Item } from './entities/item.entity';
 import { Listing } from './entities/listing.entity';
 import { Comment } from './entities/comment.entity';
+import { Tag } from './entities/tag.entity';
 
 @Injectable()
 export class ItemsService {
@@ -28,7 +29,7 @@ export class ItemsService {
 
   async findAll() {
     try {
-      return await this.itemsRepository.find({ relations: { listing: true,comments:true } })
+      return await this.itemsRepository.find({ relations: { listing: true, comments: true } })
     }
     catch (error) {
       throw new BadRequestException(error.message)
@@ -37,7 +38,7 @@ export class ItemsService {
 
   async findOne(id: number) {
     try {
-      return await this.itemsRepository.findOne({ where: { id }, relations: { listing: true,comments:true } })
+      return await this.itemsRepository.findOne({ where: { id }, relations: { listing: true, comments: true } })
     }
     catch (error) {
       throw new BadRequestException(error.message)
@@ -49,8 +50,15 @@ export class ItemsService {
       const existingItem = await this.findOne(id)
       Object.assign(existingItem, updateItemDto)
 
-      const comments=updateItemDto.comments.map((each)=>new Comment(each))
-      existingItem.comments=comments
+      if (updateItemDto?.comments?.length) {
+        const comments = updateItemDto.comments.map((each) => new Comment(each))
+        existingItem.comments = comments
+      }
+      if (updateItemDto?.tags?.length) {
+        const tags = updateItemDto.tags.map((each) => new Tag(each))
+        existingItem.tags = tags
+      }
+
       return await this.entityManager.save(existingItem)
     }
     catch (error) {
